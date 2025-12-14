@@ -1,0 +1,12 @@
+{
+  "Version": 1,
+  "Hash": "xaVPBTHrX2VLxTcnl8V4rdYyUGcc0yTnimXWnyhoaiw=",
+  "Source": "Xwear.Api",
+  "BasePath": "_content/Xwear.Api",
+  "Mode": "Default",
+  "ManifestType": "Build",
+  "ReferencedProjectsConfiguration": [],
+  "DiscoveryPatterns": [],
+  "Assets": [],
+  "Endpoints": []
+}

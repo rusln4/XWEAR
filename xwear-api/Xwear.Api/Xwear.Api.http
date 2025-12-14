@@ -1,0 +1,6 @@
+@Xwear.Api_HostAddress = http://localhost:5037
+
+GET {{Xwear.Api_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
