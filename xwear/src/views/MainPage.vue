@@ -12,4 +12,4 @@
     import { ref, onMounted } from 'vue'
     import TopHeroBanner from '../components/TopHeroBanner.vue'
     import ProductSection from '../components/ProductSection.vue'
-</script>
+</script>=ъ
