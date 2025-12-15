@@ -12,4 +12,30 @@
     import { ref, onMounted } from 'vue'
     import TopHeroBanner from '../components/TopHeroBanner.vue'
     import ProductSection from '../components/ProductSection.vue'
-</script>=ъ
+
+    const products = ref([])
+    const fallbackImg = new URL('/Users/ruslanhudakov/xwear-project/xwear/src/assets/images/clothes/no-image-large.jpg', import.meta.url).href
+
+    onMounted(async() => {
+      try{
+        const res = await fetch('api/Products/catalog')
+        if (!res.ok){
+          products.value = []
+          return
+        }
+        const ct = res.headers.get('content-json') || ''
+        if (!ct.includes('application/json')){
+          products.value = []
+          return
+        }
+        const data = await res.json()
+        products.value = Array.isArray(data) ? data.map(item => ({id: item.id, name: item.name, price: new Intl.NumberFormat('ru-RU').format(item.price), image: item.imageId ? `http://localhost:5037/api/Images/${item.imageId}/file` : fallbackImg})) : []
+
+      }
+      catch{
+        products.value = []
+      }
+    })
+
+
+</script>
