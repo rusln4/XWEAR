@@ -27,8 +27,14 @@
               </ul>
             </div>
             <div class="detail-buy-row">
-              <div class="detail-price">{{ fmtPrice(displayPrice) }} ₽</div>
-              <button class="btn btn-primary" @click="addToCart">ДОБАВИТЬ В КОРЗИНУ</button>
+              <div class="detail-price">{{ fmtPrice(currentPrice) }} ₽</div>
+              
+              <div v-if="cartQuantity > 0" class="qty-control">
+                  <button class="qty-btn" @click="decreaseCart">−</button>
+                  <span class="qty-val">{{ cartQuantity }}</span>
+                  <button class="qty-btn" @click="increaseCart">+</button>
+              </div>
+              <button v-else class="btn btn-primary" @click="addToCart">ДОБАВИТЬ В КОРЗИНУ</button>
             </div>
           </div>
         </div>
@@ -47,28 +53,47 @@
   </template>
 
 <script setup>
-    import { ref, onMounted } from 'vue';
+    import { ref, onMounted, computed, watch } from 'vue';
     import { useRoute } from 'vue-router';
 
 
     const route = useRoute()
-    const id = Number(route.params.id)
     const product = ref(null)
     const error = ref('')
     const images = ref([])
     const sizes = ref([])
     const selectedSizeId = ref(0)
-    const displayPrice = ref(0)
     const mainImage = ref('')
     const mainIndex = ref(0)
     const lightboxOpen = ref(false)
     const activeIndex = ref(0)
 
+    const cartQuantity = ref(0)
+    const cartItem = ref(null)
+
     function fmtPrice(p){
         return new Intl.NumberFormat('ru-RU').format(p || 0)
     }
 
+    const currentPrice = computed(() => {
+        const s = sizes.value.find(x => x.id === selectedSizeId.value)
+        if (s) {
+            return s.price * (cartQuantity.value > 0 ? cartQuantity.value : 1)
+        }
+        return sizes.value[0]?.price || 0
+    })
+
+    watch(selectedSizeId, async (newVal) => {
+        if (newVal > 0) {
+            await checkCart()
+        } else {
+            cartQuantity.value = 0
+            cartItem.value = null
+        }
+    })
+
     onMounted(async() =>{
+        const id = Number(route.params.id)
         if (!Number.isInteger(id) || id <= 0){
             error.value = "Некорректный номер товара";
             return
@@ -86,12 +111,13 @@
             }
             const data = await res.json()
             product.value = data
-            images.value = Array.isArray(data.images) ? data.images.map(i => ({id: i.id, url:`http://localhost:5037/api/Images/${i.id}/file`, isMain: i.isMain})) : []
+            images.value = Array.isArray(data.images) ? data.images.map(i => ({id: i.id, url:`/api/Images/${i.id}/file`, isMain: i.isMain})) : []
             sizes.value = Array.isArray(data.sizes) ? data.sizes.map(s => ({id: s.id, size: s.size1, price: s.price})) : []
             const main = images.value.find(i => Number(i.isMain) === 1)?.url
             mainImage.value = main || images.value[0]?.url || ''
             mainIndex.value = images.value.findIndex(i => i.url === mainImage.value)
-            displayPrice.value = sizes.value[0]?.price || 0
+            
+            // Check cart if needed (e.g. if size was pre-selected, but here it is 0)
         }
         catch{
             error.value = "Сеть недоступна"
@@ -141,11 +167,41 @@
             return
         }
         selectedSizeId.value = Number(s.id) || 0
-        displayPrice.value = Number(s.price) || 0
+        error.value = ''
+    }
+
+    async function checkCart() {
+        if (selectedSizeId.value === 0) return
+        const raw = localStorage.getItem('xwear_user')
+        const u = raw ? JSON.parse(raw) : null
+        const userId = Number(u?.id)
+        if (!userId) return
+
+        try {
+            const res = await fetch(`/api/Carts/user/${userId}`)
+            if (res.ok) {
+                const items = await res.json()
+                const productId = Number(route.params.id)
+                const item = items.find(i => i.productId === productId && i.sizeId === selectedSizeId.value)
+                if (item) {
+                    cartQuantity.value = item.count
+                    cartItem.value = item
+                } else {
+                    cartQuantity.value = 0
+                    cartItem.value = null
+                }
+            }
+        } catch (e) {
+            console.error(e)
+        }
     }
 
     async function addToCart(){
         error.value = ''
+        if (selectedSizeId.value === 0) {
+            error.value = "Выберите размер"
+            return
+        }
         try{
             const raw = localStorage.getItem('xwear_user')
             const u = raw ? JSON.parse(raw) : null
@@ -154,7 +210,8 @@
                 error.value = "Войдите в профиль, чтобы добавить в корзину";
                 return
             }
-            const res = await fetch('/api/Carts', {method: 'POST', headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' }, body: JSON.stringify({ userId, productId: id, sizeId: selectedSizeId.value, count: 1})})
+            const productId = Number(route.params.id)
+            const res = await fetch('/api/Carts', {method: 'POST', headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' }, body: JSON.stringify({ userId, productId, sizeId: selectedSizeId.value, count: 1})})
             if (!res.ok){
                 if (res.status === 400){
                     error.value = "Неверные данные"
@@ -167,9 +224,57 @@
                 }
                 return
             }
+            await checkCart()
         }
         catch{
             error.value = "Сеть не доступна"
+        }
+    }
+
+    async function increaseCart() {
+        if (!cartItem.value) return
+        try {
+            const newCount = cartQuantity.value + 1
+            const res = await fetch(`/api/Carts/${cartItem.value.id}/count`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(newCount)
+            })
+            if (res.ok) {
+                cartQuantity.value = newCount
+                // update local cartItem count too
+                cartItem.value.count = newCount
+            }
+        } catch (e) {
+            console.error(e)
+            error.value = "Ошибка обновления корзины"
+        }
+    }
+
+    async function decreaseCart() {
+        if (!cartItem.value) return
+        try {
+            if (cartQuantity.value > 1) {
+                const newCount = cartQuantity.value - 1
+                const res = await fetch(`/api/Carts/${cartItem.value.id}/count`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(newCount)
+                })
+                if (res.ok) {
+                    cartQuantity.value = newCount
+                    cartItem.value.count = newCount
+                }
+            } else {
+                const res = await fetch(`/api/Carts/${cartItem.value.id}`, { method: 'DELETE' })
+                if (res.ok) {
+                    cartQuantity.value = 0
+                    cartItem.value = null
+                }
+            }
+        } catch (e) {
+            console.error(e)
+            error.value = "Ошибка обновления корзины"
         }
     }
 </script>
@@ -187,7 +292,7 @@
     .detail-title-row .fav-star { width: 20px; height: 20px; filter: invert(1); }
     .sizes-label { margin: 24px 0 12px; font-size: 13px; color: #6A6A6A; letter-spacing: .5px; }
     .sizes-grid { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 10px; list-style: none; padding: 0; }
-    .size-item { border: 1px solid #E9EAEE; border-radius: 10px; padding: 12px 14px; display: flex; flex-direction: column; align-items: center; gap: 4px; background: #fff; }
+    .size-item { border: 1px solid #E9EAEE; border-radius: 10px; padding: 12px 14px; display: flex; flex-direction: column; align-items: center; gap: 4px; background: #fff; cursor: pointer; }
     .size-item:hover { border-color: #D4D6DC; }
     .size-item.active { border-color: black; box-shadow: 0 0 0 2px rgba(0,0,0,.06); }
     .size-val { font-size: 14px; color: #171819; }
@@ -207,4 +312,7 @@
     .lightbox-thumbs img { width: 60px; height: 60px; object-fit: contain; background: #F9F9F9; border-radius: 6px; opacity: .8; cursor: pointer; }
     .lightbox-thumbs img.active { outline: 2px solid white; opacity: 1; }
     
+    .qty-control { display: flex; align-items: center; gap: 10px; background: #F0F0F0; border-radius: 8px; padding: 4px 8px; }
+    .qty-btn { background: white; border: 1px solid #E0E0E0; border-radius: 4px; width: 28px; height: 28px; cursor: pointer; font-size: 16px; display: flex; align-items: center; justify-content: center; }
+    .qty-val { font-size: 16px; font-weight: 600; min-width: 20px; text-align: center; }
 </style>

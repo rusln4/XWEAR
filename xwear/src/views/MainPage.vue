@@ -18,7 +18,7 @@
 
     onMounted(async() => {
       try{
-        const res = await fetch('api/Products/catalog')
+        const res = await fetch('/api/Products/catalog')
         if (!res.ok){
           products.value = []
           return
@@ -29,7 +29,7 @@
           return
         }
         const data = await res.json()
-        products.value = Array.isArray(data) ? data.map(item => ({id: item.id, name: item.name, price: new Intl.NumberFormat('ru-RU').format(item.price), image: item.imageId ? `http://localhost:5037/api/Images/${item.imageId}/file` : fallbackImg})) : []
+        products.value = Array.isArray(data) ? data.map(item => ({id: item.id, name: item.name, price: new Intl.NumberFormat('ru-RU').format(item.price), image: item.imageId ? `/api/Images/${item.imageId}/file` : fallbackImg})) : []
 
       }
       catch{

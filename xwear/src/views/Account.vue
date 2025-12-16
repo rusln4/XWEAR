@@ -23,7 +23,7 @@
               </div>
               <div class="input-group">
                 <label>Телефон</label>
-                <input type="tel" v-model="form.phone" placeholder="+7 999 123-45-67" @input="onPhoneEditInput" maxlength="16" />
+                <input type="tel" v-model="form.phone" placeholder="+7 999 123-45-67" disabled />
               </div>
             </div>
             <div v-else>
@@ -118,39 +118,46 @@
         if (!Number.isInteger(id) || id <= 0){
             error.value = "Неверный номер пользователя"; return
         }
+
+        // Validation
+        const name = form.value.name || ''
+        if (name.length < 2 || /[^a-zA-Zа-яА-ЯёЁ]/.test(name)) {
+             error.value = "Имя должно быть не короче 2 символов и содержать только буквы";
+             return
+        }
+
         saving.value = true
         error.value = ''
-        succes.value = false
         try{
-            const res = await fetch(`/api/Users/${id}`, { method: 'PUT', headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' }, body: JSON.stringify({ name: form.value.name, phone: form.value.phone })})
-            if(!res.ok){
-                const status = res.status
-                if (status === 404){
-                    error.value = "Пользователь не найден"
-                }
-                else if (status === 400){
-                    error.value = "Неверный запрос"
-                }
-                else if (status >= 500){
-                    error.value = "Ошибка на сервере"
-                }
-                else{
-                    error.value = "Не уалось сохранить"
-                }
-                return
+            const res = await fetch(`/api/Users/${id}`, {
+                method: 'PUT', 
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ name: name })
+            })
+            if (res.ok){
+                success.value = true
+                user.value.name = name
+                localStorage.setItem('xwear_user', JSON.stringify(user.value))
+                setTimeout(() => {
+                    editing.value = false
+                    success.value = false
+                }, 1500)
             }
-            user.value = {...user.value, name: from.value.name, phone: from.value.phone}
-            localStorage.setItem('xwear_user', JSON.stringify(user.value))
-            succes.value = true
-            editing.value = false
+            else {
+                if (res.status === 400) {
+                     const txt = await res.text()
+                     error.value = txt || "Некорректные данные"
+                } else {
+                     error.value = "Ошибка при сохранении"
+                }
+            }
         }
         catch(e){
-            error.value = "Сеть не доступна"
+            error.value = "Ошибка сети"
         }
         finally{
             saving.value = false
         }
-        
     }
     onMounted(loadUser)
     

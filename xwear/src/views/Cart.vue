@@ -7,7 +7,13 @@
             <div class="profile-email">{{ user.email }}</div>
           </div>
         </div>
-        <div v-if="items.length" class="cart-list">
+        <div v-if="success" class="success-message" style="text-align: center; padding: 40px;">
+          <h2 style="font-family: 'Unbounded', sans-serif; font-size: 24px; margin-bottom: 20px;">Спасибо за заказ!</h2>
+          <p style="font-size: 18px; margin-bottom: 10px;">Заказ на сумму <strong>{{ fmt(lastOrderTotal) }} ₽</strong> успешно оформлен.</p>
+          <p style="color: #888;">Количество товаров: {{ lastOrderCount }}</p>
+          <button class="btn btn-primary" style="margin-top: 30px; max-width: 200px;" @click="success = false">ВЕРНУТЬСЯ В МАГАЗИН</button>
+        </div>
+        <div v-else-if="items.length" class="cart-list">
           <div v-for="it in items" :key="it.id" class="cart-item">
             <figure class="cart-image"><img :src="it.image" alt="product" /></figure>
             <div class="cart-info">
@@ -30,7 +36,6 @@
             <button class="btn btn-primary" @click="checkout" :disabled="placing">ОФОРМИТЬ ЗАКАЗ</button>
           </div>
           <p v-if="error" class="error-text">{{ error }}</p>
-          <p v-if="success" class="success-text">Заказ оформлен</p>
         </div>
         <div v-else class="empty">Ваша корзина пуста</div>
       </div>
@@ -46,6 +51,8 @@
     const error = ref('')
     const success = ref(false)
     const placing = ref(false)
+    const lastOrderTotal = ref(0)
+    const lastOrderCount = ref(0)
 
     function fmt(n){
         return new Intl.NumberFormat('ru-RU').format(n || 0)
@@ -68,7 +75,7 @@
                 id: x.id, 
                 productId: x.productId,
                 name: x.name,
-                image: x.imageId ? `http://localhost:5037/api/Images/${x.imageId}/file` : fallbackImg,
+                image: x.imageId ? `/api/Images/${x.imageId}/file` : fallbackImg,
                 size: x.size,
                 price: x.price,
                 count: x.count
@@ -121,22 +128,27 @@
         }
     }
     async function checkout() {
-        succes.value = false
+        success.value = false
         error.value = ''
         placing.value = true
         try{
             const uid = Number(user.value?.id)
             if (!uid){
-                error.value = "Войдите в прфоиль";
+                error.value = "Войдите в профиль";
                 return
             }
+            // Capture summary
+            lastOrderTotal.value = total.value
+            lastOrderCount.value = items.value.reduce((c, i) => c + i.count, 0)
+
             const res = await fetch('/api/Carts/checkout', {method: 'POST', headers: { 'Content-Type': 'application/json' },body: JSON.stringify({ userId: uid })})
             if (!res.ok){
                 error.value = "Не удалось оформить заказ"
                 return;
             }
             items.value = []
-            succes.value = true
+            success.value = true
+            window.scrollTo(0,0)
         }   
         catch{
             error.value = "Сеть не доступна"
@@ -144,7 +156,6 @@
         finally{
             placing.value = false
         }
-
     }
 
     onMounted(load)

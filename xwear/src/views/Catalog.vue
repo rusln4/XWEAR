@@ -76,13 +76,10 @@
 
     onMounted(async() => {
         try{
-            let res = await fetch('api/Products/full')
+            let res = await fetch('/api/Products/full')
             if (!res.ok){
-                res = await fetch('http://localhost:5037/api/Products/full')
-                if (!res.ok){
-                    items.value = [];
-                    return
-                }
+                items.value = [];
+                return
             }
             const ct = res.headers.get('content-type') || ''
             if (!ct.includes('application/json')){
@@ -92,7 +89,7 @@
             const data = await res.json()
             const fallbackImg = new URL('../assets/images/clothes/no-image-large.jpg', import.meta.url).href
             items.value = Array.isArray(data) ? data.map(p => {
-                const image = p.imageId ? `http://localhost:5037/api/Images/${p.imageId}/file` : fallbackImg
+                const image = p.imageId ? `/api/Images/${p.imageId}/file` : fallbackImg
                 const sizes = Array.isArray(p.sizes) ? p.sizes : []
                 const minPrice = typeof p.price === 'number' ? p.price : 0
                 return { id: p.id, name: p.name, image: image, priceNum: minPrice, priceText: fmt(minPrice), category: p.category || "Другое", sizes}
