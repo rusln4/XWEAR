@@ -111,10 +111,16 @@
             }
             const data = await res.json()
             product.value = data
-            images.value = Array.isArray(data.images) ? data.images.map(i => ({id: i.id, url:`/api/Images/${i.id}/file`, isMain: i.isMain})) : []
+            const fallbackImg = new URL('../assets/images/clothes/no-image-large.jpg', import.meta.url).href
+            
+            images.value = Array.isArray(data.images) && data.images.length > 0 ? data.images.map(i => ({id: i.id, url:`/api/Images/${i.id}/file`, isMain: i.isMain})) : []
+            if (images.value.length === 0) {
+                 images.value = [{ id: 0, url: fallbackImg, isMain: 1 }]
+            }
+
             sizes.value = Array.isArray(data.sizes) ? data.sizes.map(s => ({id: s.id, size: s.size1, price: s.price})) : []
             const main = images.value.find(i => Number(i.isMain) === 1)?.url
-            mainImage.value = main || images.value[0]?.url || ''
+            mainImage.value = main || images.value[0]?.url || fallbackImg
             mainIndex.value = images.value.findIndex(i => i.url === mainImage.value)
             
             // Check cart if needed (e.g. if size was pre-selected, but here it is 0)

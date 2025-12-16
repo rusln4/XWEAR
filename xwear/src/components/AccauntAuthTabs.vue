@@ -58,6 +58,8 @@
             <input type="password" placeholder="••••••••••" v-model="register.password2" required />
           </div>
           <button class="btn btn-primary" type="submit">СОЗДАТЬ АККАУНТ</button>
+          <p v-if="registerError" class="error-text">{{ registerError }}</p>
+          <p v-if="registerSuccess" class="success-text">{{ registerSuccess }}</p>
         </form>
       </div>
   
@@ -75,6 +77,8 @@
         activeTab: 'login',
         loginLoading: false,
         loginError: '',
+        registerError: '',
+        registerSuccess: '',
         login: { email: '', password: '' },
         register: { email: '', password: '', password2: '', name: '', phone: '' }
       }
@@ -124,18 +128,47 @@
         }
       },
       async onRegister() {
-        if (!this.register.email || !this.register.password || !this.register.password2) return;
-        if (this.register.password !== this.register.password2) return;
-        if (this.register.password.length < 6) return;
+        this.registerError = ''
+        this.registerSuccess = ''
+        if (!this.register.email || !this.register.password || !this.register.password2) {
+             this.registerError = "Заполните обязательные поля"; return
+        }
+        if (this.register.password !== this.register.password2) {
+             this.registerError = "Пароли не совпадают"; return
+        }
+        if (this.register.password.length < 6) {
+             this.registerError = "Пароль слишком короткий (минимум 6 символов)"; return
+        }
+        // Name validation
+        const name = this.register.name || ''
+        if (name && (name.length < 2 || /[^a-zA-Zа-яА-ЯёЁ]/.test(name))) {
+             this.registerError = "Некорректное имя (минимум 2 буквы, без цифр и символов)"; return
+        }
+
         try {
           const res = await fetch('/api/Auth/register', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ email: this.register.email, password: this.register.password, name: this.register.name || null, phone: this.register.phone || null })
           });
-          if (!res.ok) return;
-          this.activeTab = 'login';
-        } catch (e) { console.error(e) }
+          
+          if (!res.ok) {
+              const txt = await res.text()
+              this.registerError = txt || "Ошибка регистрации"
+              return;
+          }
+
+          this.registerSuccess = "Регистрация прошла успешно!"
+          this.register = { email: '', password: '', password2: '', name: '', phone: '' }
+          setTimeout(() => {
+              this.registerSuccess = ''
+              this.activeTab = 'login'
+          }, 2000)
+
+        } catch (e) { 
+            console.error(e)
+            this.registerError = "Ошибка сети"
+        }
       }
     }
   }
