@@ -32,10 +32,11 @@ html, body {
 nav {
     background-color: black;
     display: flex;
+    width: 100%;
     flex-direction: row;
     justify-content: space-evenly;
     align-items: center;
-    height: 80px;
+    height: 100px;
 }
 
 .shopName {
@@ -69,6 +70,8 @@ nav {
 }
 
 .menu {
+    display: flex;
+    justify-content: space-between;
     font-size: 16px;
 }
 .menu li {
@@ -77,7 +80,7 @@ nav {
 }
 .menu li a {
 	display: block;
-	padding: 15px 15px;
+	padding: 10px 10px;
 	color: #ffff;
 	text-align: center;
     text-decoration: none;

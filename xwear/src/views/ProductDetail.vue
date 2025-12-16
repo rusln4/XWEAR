@@ -46,12 +46,12 @@
     </section>
   </template>
 
-<script>
-    import { ref, onMounted, render } from 'vue';
-    import { useRoute, useRouter } from 'vue-router';
+<script setup>
+    import { ref, onMounted } from 'vue';
+    import { useRoute } from 'vue-router';
 
 
-    const route = useRouter()
+    const route = useRoute()
     const id = Number(route.params.id)
     const product = ref(null)
     const error = ref('')
@@ -94,7 +94,7 @@
             displayPrice.value = sizes.value[0]?.price || 0
         }
         catch{
-            error.value = "Сеть недоспупна"
+            error.value = "Сеть недоступна"
         }
     })
 
@@ -154,7 +154,7 @@
                 error.value = "Войдите в профиль, чтобы добавить в корзину";
                 return
             }
-            const res = await fetch('/api/Carts', {method: 'POST', headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' }, body: JSON.stringify({ userId, productId: id, sizeId, count: 1})})
+            const res = await fetch('/api/Carts', {method: 'POST', headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' }, body: JSON.stringify({ userId, productId: id, sizeId: selectedSizeId.value, count: 1})})
             if (!res.ok){
                 if (res.status === 400){
                     error.value = "Неверные данные"

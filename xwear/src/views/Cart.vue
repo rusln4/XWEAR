@@ -44,7 +44,7 @@
     const user = ref(null)
     const items = ref([])
     const error = ref('')
-    const succes = ref(false)
+    const success = ref(false)
     const placing = ref(false)
 
     function fmt(n){
@@ -63,7 +63,7 @@
                 error.value = "Не удалось загрузить корзину"; return
             }
             const data = await res.json()
-            const fallbackImg = new URL('/Users/ruslanhudakov/xwear-project/xwear/src/assets/images/clothes/no-image-large.jpg', import.meta.url).href
+            const fallbackImg = new URL('../assets/images/clothes/no-image-large.jpg', import.meta.url).href
             items.value = Array.isArray(data) ? data.map(x => ({
                 id: x.id, 
                 productId: x.productId,

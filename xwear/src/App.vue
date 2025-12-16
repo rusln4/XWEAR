@@ -1,6 +1,7 @@
 <template>
 <div  id="app">
   <SiteNavbar/>
+  <router-view />
   <SiteFooter/>
 </div>
 

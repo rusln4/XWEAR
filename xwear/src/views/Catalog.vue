@@ -90,12 +90,12 @@
                 return
             }
             const data = await res.json()
-            const fallbackImg = new URL('/Users/ruslanhudakov/xwear-project/xwear/src/assets/images/clothes/no-image-large.jpg', import.meta.url).href
+            const fallbackImg = new URL('../assets/images/clothes/no-image-large.jpg', import.meta.url).href
             items.value = Array.isArray(data) ? data.map(p => {
                 const image = p.imageId ? `http://localhost:5037/api/Images/${p.imageId}/file` : fallbackImg
                 const sizes = Array.isArray(p.sizes) ? p.sizes : []
                 const minPrice = typeof p.price === 'number' ? p.price : 0
-                return { id: p.id, name: p.name, image: p.image, priceNum: minPrice, priceText: fmt(minPrice), category: p.category || "Другое", sizes}
+                return { id: p.id, name: p.name, image: image, priceNum: minPrice, priceText: fmt(minPrice), category: p.category || "Другое", sizes}
             }) : []
             const cats = Array.from(new Set(items.value.map(i => i.category))).filter(Boolean)
             categories.value = cats

@@ -4,8 +4,7 @@
       <div v-if="user">
         <div class="account-card">
           <div class="profile-header">
-            <div style="display:flex;align-items:center;gap:14px;">
-              <div class="avatar"><img :src="avatarSrc" alt="avatar" /></div>
+            <div style="display:flex;align-items:center; gap:14px;">
               <div class="profile-name-email">
                 <div class="profile-name">{{ user.name || 'Без имени' }}</div>
                 <div class="profile-email">{{ user.email }}</div>
@@ -60,13 +59,13 @@
     import {ref, onMounted} from 'vue'
     import ProfileHero from '@/components/ProfileHero.vue';
     import AccauntAuthTabs from '@/components/AccauntAuthTabs.vue';
-    const avatarSrc = new URL('/Users/ruslanhudakov/xwear-project/xwear/src/assets/images/icons/аватарка.jpg', import.meta.url).href
+    const avatarSrc = new URL('../assets/images/icons/аватарка.jpg', import.meta.url).href
 
     const user = ref(null)
     const editing = ref(null)
     const saving = ref(null)
     const error = ref('')
-    const succes = ref(false)
+    const success = ref(false)
     const form = ref({name: '', phone: ''})
 
     function loadUser(){
@@ -90,14 +89,14 @@
 
     function startEdit(){           
         error.value = ''
-        succes.value = ''
+        success.value = ''
         editing.value = true
-        from.value = {name: user.value?.name || '', phone: user.value?.phone || ''}
+        form.value = {name: user.value?.name || '', phone: user.value?.phone || ''}
     }
 
     function cancelEdit(){
         editing.value = false
-        succes.value = false
+        success.value = false
         error.value = ''
     }
     function onPhoneEditInput(e) {

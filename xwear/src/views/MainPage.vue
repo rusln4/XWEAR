@@ -14,7 +14,7 @@
     import ProductSection from '../components/ProductSection.vue'
 
     const products = ref([])
-    const fallbackImg = new URL('/Users/ruslanhudakov/xwear-project/xwear/src/assets/images/clothes/no-image-large.jpg', import.meta.url).href
+    const fallbackImg = new URL('../assets/images/clothes/no-image-large.jpg', import.meta.url).href
 
     onMounted(async() => {
       try{
@@ -23,7 +23,7 @@
           products.value = []
           return
         }
-        const ct = res.headers.get('content-json') || ''
+        const ct = res.headers.get('content-type') || ''
         if (!ct.includes('application/json')){
           products.value = []
           return
