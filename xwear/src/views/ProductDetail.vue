@@ -123,7 +123,7 @@
             mainImage.value = main || images.value[0]?.url || fallbackImg
             mainIndex.value = images.value.findIndex(i => i.url === mainImage.value)
             
-            // Check cart if needed (e.g. if size was pre-selected, but here it is 0)
+            
         }
         catch{
             error.value = "Сеть недоступна"
@@ -284,41 +284,3 @@
         }
     }
 </script>
-
-<style scoped>
-    .product-page { width: 100%; margin: 0; padding: 30px 60px; }
-    .product-card { padding: 0; border: none; background: transparent; }
-    .product-detail-grid { display: grid; grid-template-columns: 1.6fr 1fr; gap: 40px; align-items: start; }
-    .detail-image { height: 360px; }
-    .detail-image img { width: 100%; height: 100%; display: block; object-fit: contain; background: #F9F9F9; border-radius: 8px; }
-    .thumbs { display: flex; gap: 16px; margin-top: 16px; }
-    .thumbs img { width: 80px; height: 80px; object-fit: contain; background: #F9F9F9; border-radius: 6px; }
-    .detail-title-row { display: flex; align-items: center; justify-content: space-between; }
-    .detail-title { font-family: rf-devi-extended-black; font-size: 40px; line-height: 1.1; text-transform: uppercase; }
-    .detail-title-row .fav-star { width: 20px; height: 20px; filter: invert(1); }
-    .sizes-label { margin: 24px 0 12px; font-size: 13px; color: #6A6A6A; letter-spacing: .5px; }
-    .sizes-grid { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 10px; list-style: none; padding: 0; }
-    .size-item { border: 1px solid #E9EAEE; border-radius: 10px; padding: 12px 14px; display: flex; flex-direction: column; align-items: center; gap: 4px; background: #fff; cursor: pointer; }
-    .size-item:hover { border-color: #D4D6DC; }
-    .size-item.active { border-color: black; box-shadow: 0 0 0 2px rgba(0,0,0,.06); }
-    .size-val { font-size: 14px; color: #171819; }
-    .size-price { font-size: 12px; color: #707076; }
-    .detail-buy-row { display: flex; align-items: center; gap: 20px; margin-top: 24px; }
-    .detail-price { font-size: 22px; }
-    @media (max-width: 900px) { .product-page { padding: 20px; } }
-    @media (max-width: 768px) { .product-detail-grid { grid-template-columns: 1fr; } }
-    
-    .lightbox { position: fixed; inset: 0; background: rgba(0,0,0,.6); display: flex; align-items: center; justify-content: center; z-index: 1000; }
-    .lightbox-image { max-width: 80vw; max-height: 70vh; border-radius: 8px; background: #F9F9F9; }
-    .lightbox-close { position: absolute; top: 20px; right: 24px; background: transparent; border: none; color: white; font-size: 24px; cursor: pointer; }
-    .lightbox-nav { position: absolute; top: 50%; transform: translateY(-50%); background: rgba(0,0,0,.3); color: white; border: none; width: 40px; height: 40px; border-radius: 50%; cursor: pointer; }
-    .lightbox-nav.prev { left: 24px; }
-    .lightbox-nav.next { right: 24px; }
-    .lightbox-thumbs { position: absolute; bottom: 24px; left: 50%; transform: translateX(-50%); display: flex; gap: 8px; }
-    .lightbox-thumbs img { width: 60px; height: 60px; object-fit: contain; background: #F9F9F9; border-radius: 6px; opacity: .8; cursor: pointer; }
-    .lightbox-thumbs img.active { outline: 2px solid white; opacity: 1; }
-    
-    .qty-control { display: flex; align-items: center; gap: 10px; background: #F0F0F0; border-radius: 8px; padding: 4px 8px; }
-    .qty-btn { background: white; border: 1px solid #E0E0E0; border-radius: 4px; width: 28px; height: 28px; cursor: pointer; font-size: 16px; display: flex; align-items: center; justify-content: center; }
-    .qty-val { font-size: 16px; font-weight: 600; min-width: 20px; text-align: center; }
-</style>

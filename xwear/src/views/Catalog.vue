@@ -153,37 +153,3 @@
 <script>
     export default {name: 'CatalogPage'}
 </script>
-
-<style scoped>
-    .catalog-page { width: 100%; margin: 0; padding: 30px 60px; }
-    .catalog-layout { display: grid; grid-template-columns: 280px 1fr; gap: 40px; }
-    .filters { position: sticky; top: 20px; align-self: start; display: flex; flex-direction: column; gap: 20px; }
-    .filter-group { border: 1px solid #E9EAEE; border-radius: 10px; background: #fff; padding: 16px; }
-    .filter-title { font-size: 13px; color: #6A6A6A; margin-bottom: 12px; letter-spacing: .5px; }
-    .filter-list { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 8px; }
-    .filter-list li { padding: 8px 10px; border-radius: 8px; cursor: pointer; }
-    .filter-list li:hover { background: #F5F5F7; }
-    .filter-list li.active { background: black; color: white; }
-    .price-inputs { display: grid; grid-template-columns: 1fr auto 1fr auto; gap: 8px; align-items: center; }
-    .price-input { width: 100%; height: 40px; border: 1px solid #E9EAEE; border-radius: 8px; padding: 0 10px; background: #F9F9F9; }
-    .rub { color: #6A6A6A; font-size: 14px; }
-    .range { width: 100%; margin-top: 10px; }
-    .sizes-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; list-style: none; padding: 0; }
-    .sizes-grid li { border: 1px solid #E9EAEE; border-radius: 8px; padding: 10px; text-align: center; cursor: pointer; background: #fff; }
-    .sizes-grid li.active { background: black; color: white; border-color: black; }
-    .catalog-header { display: flex; align-items: baseline; justify-content: space-between; }
-    .catalog-title { font-family: rf-devi-extended-black; font-size: 40px; line-height: 1.1; text-transform: uppercase; }
-    .catalog-count { color: #6A6A6A; font-size: 14px; }
-    .block-shoes-buy { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 24px; list-style: none; padding: 0; }
-    .card-product { border: 1px solid #E9EAEE; border-radius: 10px; padding: 14px; background: #fff; cursor: pointer; transition: transform .15s ease, box-shadow .15s ease; position: relative; }
-    .card-product:hover { transform: translateY(-2px); box-shadow: 0 6px 16px rgba(0,0,0,.06); }
-    .img-product { width: 100%; aspect-ratio: 1 / 1; border-radius: 8px; background: #F9F9F9; display: block; overflow: hidden; }
-    .img-product img { width: 100%; height: 100%; object-fit: contain; display: block; }
-    .fav-star { position: absolute; top: 8px; right: 8px; width: 16px; height: 16px; pointer-events: none; filter: invert(1); }
-    .block-name-price { margin-top: 10px; display: flex; align-items: center; justify-content: space-between; }
-    .name-product { font-size: 14px; }
-    .price-product { font-size: 16px; color: #3C3C3C; display: inline-flex; align-items: baseline; gap: 4px; }
-    .price-value { line-height: 1; }
-    .currency { line-height: 1; }
-    @media (max-width: 900px) { .catalog-page { padding: 20px; } .catalog-layout { grid-template-columns: 1fr; } }
-    </style>
