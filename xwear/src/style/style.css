@@ -911,6 +911,10 @@ nav {
   }
 }
 
+.catalog-page .sizes-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; list-style: none; padding: 0; }
+.catalog-page .sizes-grid li { border: 1px solid #E9EAEE; border-radius: 8px; padding: 10px; text-align: center; cursor: pointer; background: #fff; }
+.catalog-page .sizes-grid li.active { background: black; color: white; border-color: black; }
+
 
 .product-page { width: 100%; margin: 0; padding: 30px 60px; }
 .product-card { padding: 0; border: none; background: transparent; }

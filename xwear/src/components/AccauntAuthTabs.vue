@@ -13,7 +13,8 @@
           </div>
           <div class="input-group">
             <label>Пароль</label>
-            <input type="password" placeholder="••••••••••" v-model="login.password" required />
+            <input :type="loginShowPassword ? 'text' : 'password'" placeholder="••••••••••" v-model="login.password" required />
+            <a class="link" href="#" @click.prevent="loginShowPassword = !loginShowPassword">{{ loginShowPassword ? '🪬' : '🪬' }}</a>
           </div>
           <div class="form-meta">
             <label class="check">
@@ -40,7 +41,8 @@
             </div>
             <div class="input-group">
               <label>Пароль</label>
-              <input type="password" placeholder="••••••••••" v-model="register.password" required />
+              <input :type="registerShowPassword ? 'text' : 'password'" placeholder="••••••••••" v-model="register.password" required />
+              <a class="link" href="#" @click.prevent="registerShowPassword = !registerShowPassword">{{ registerShowPassword ? '🪬' : '🪬' }}</a>
             </div>
           </div>
           <div class="input-row">
@@ -55,7 +57,8 @@
           </div>
           <div class="input-group">
             <label>Повторите пароль</label>
-            <input type="password" placeholder="••••••••••" v-model="register.password2" required />
+            <input :type="registerShowPassword2 ? 'text' : 'password'" placeholder="••••••••••" v-model="register.password2" required />
+            <a class="link" href="#" @click.prevent="registerShowPassword2 = !registerShowPassword2">{{ registerShowPassword2 ? '🪬' : '🪬' }}</a>
           </div>
           <button class="btn btn-primary" type="submit">СОЗДАТЬ АККАУНТ</button>
           <p v-if="registerError" class="error-text">{{ registerError }}</p>
@@ -79,6 +82,9 @@
         loginError: '',
         registerError: '',
         registerSuccess: '',
+        loginShowPassword: false,
+        registerShowPassword: false,
+        registerShowPassword2: false,
         login: { email: '', password: '' },
         register: { email: '', password: '', password2: '', name: '', phone: '' }
       }
@@ -98,7 +104,10 @@
         this.register.phone = r
       },
       async onLogin() {
-        if (!this.login.email || !this.login.password) { this.loginError = 'Заполните email и пароль'; return; }
+        if (!this.login.email || !this.login.password) {
+          this.loginError = 'Заполните email и пароль';
+          return; 
+          }
         this.loginError = ''
         this.loginLoading = true
         try {
@@ -116,14 +125,19 @@
           }
           const ct = res.headers.get('content-type') || ''
           const user = ct.includes('application/json') ? await res.json() : null
-          if (!user) { this.loginError = 'Ошибка ответа сервера'; return }
+          if (!user) {
+            this.loginError = 'Ошибка ответа сервера';
+            return
+          }
           localStorage.setItem('xwear_user', JSON.stringify(user));
           this.$emit('logged-in', user);
           if (this.$router) this.$router.push({ name: 'Account' })
-        } catch (e) {
+        } 
+        catch (e) {
           console.error(e)
           this.loginError = 'Сеть недоступна'
-        } finally {
+        } 
+        finally {
           this.loginLoading = false
         }
       },
@@ -131,18 +145,22 @@
         this.registerError = ''
         this.registerSuccess = ''
         if (!this.register.email || !this.register.password || !this.register.password2) {
-             this.registerError = "Заполните обязательные поля"; return
+            this.registerError = "Заполните обязательные поля";
+            return
         }
         if (this.register.password !== this.register.password2) {
-             this.registerError = "Пароли не совпадают"; return
+            this.registerError = "Пароли не совпадают";
+            return
         }
         if (this.register.password.length < 6) {
-             this.registerError = "Пароль слишком короткий (минимум 6 символов)"; return
+            this.registerError = "Пароль слишком короткий (минимум 6 символов)";
+            return
         }
-        // Name validation
+        
         const name = this.register.name || ''
         if (name && (name.length < 2 || /[^a-zA-Zа-яА-ЯёЁ]/.test(name))) {
-             this.registerError = "Некорректное имя (минимум 2 буквы, без цифр и символов)"; return
+            this.registerError = "Некорректное имя (минимум 2 буквы, без цифр и символов)";
+            return
         }
 
         try {
@@ -153,9 +171,9 @@
           });
           
           if (!res.ok) {
-              const txt = await res.text()
-              this.registerError = txt || "Ошибка регистрации"
-              return;
+            const txt = await res.text()
+            this.registerError = txt || "Ошибка регистрации"
+            return;
           }
 
           this.registerSuccess = "Регистрация прошла успешно!"
@@ -165,7 +183,8 @@
               this.activeTab = 'login'
           }, 2000)
 
-        } catch (e) { 
+        } 
+        catch (e) { 
             console.error(e)
             this.registerError = "Ошибка сети"
         }

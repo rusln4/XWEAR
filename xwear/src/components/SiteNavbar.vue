@@ -32,13 +32,16 @@
 
             <router-link to="/cart" class="bascket-info-link">
                 <img src="../assets/images/icons/bascket_icon.svg" alt="">
+                
             </router-link>
         </div>
     </nav>
 </template>
 
+
 <script>
     export default {
         name: "SiteNavbar"
     }
+
 </script>

@@ -11,6 +11,7 @@
           <h2>Спасибо за заказ!</h2>
           <p class="success-info">Заказ на сумму <strong>{{ fmt(lastOrderTotal) }} ₽</strong> успешно оформлен.</p>
           <p class="success-count">Количество товаров: {{ lastOrderCount }}</p>
+    
           <button class="btn btn-primary" @click="success = false">ВЕРНУТЬСЯ В МАГАЗИН</button>
         </div>
         <div v-else-if="items.length">
@@ -55,6 +56,7 @@
     const placing = ref(false)
     const lastOrderTotal = ref(0)
     const lastOrderCount = ref(0)
+  
 
     function fmt(n){
         return new Intl.NumberFormat('ru-RU').format(n || 0)
@@ -129,6 +131,10 @@
             error.value = "Сеть недоступна"
         }
     }
+
+    
+    
+
     async function checkout() {
         success.value = false
         error.value = ''

@@ -248,7 +248,6 @@
             })
             if (res.ok) {
                 cartQuantity.value = newCount
-                // update local cartItem count too
                 cartItem.value.count = newCount
             }
         } catch (e) {

@@ -119,7 +119,7 @@
             error.value = "Неверный номер пользователя"; return
         }
 
-        // Validation
+        
         const name = form.value.name || ''
         if (name.length < 2 || /[^a-zA-Zа-яА-ЯёЁ]/.test(name)) {
              error.value = "Имя должно быть не короче 2 символов и содержать только буквы";
